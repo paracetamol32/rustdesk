@@ -1,0 +1,34 @@
+# This is a basic workflow that is manually triggered
+
+name: Clean Build Artifacts
+
+on:
+  workflow_dispatch:  # Permet le déclenchement manuel
+  schedule:
+    - cron: '0 0 * * *'  # Ou programmé (ici tous les jours à minuit)
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Delete artifacts
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: |  # Liste des noms d'artefacts à supprimer
+            run-flutter-nightly-build
+            build-RustDeskTempTopMostWindow
+            build-rustdesk-web
+            build-for-macOS-arm64-selfhost
+            build-rustdesk-ios-selfhost
+          # Vous pouvez ajouter d'autres patterns de noms d'artefacts
+          failOnError: false
+
+      # Optionnel : Nettoyer aussi les dossiers locaux
+      - name: Clean local build directories
+        run: |
+          rm -rf build/
+          rm -rf dist/
+          rm -rf .dart_tool/
+          rm -rf .pub-cache/
